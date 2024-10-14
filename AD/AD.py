@@ -26,10 +26,6 @@ st.set_page_config(
 st.title("Alzheimer's Diasease Clinical Trial Dashboard")
 st.markdown('## Insight into Industry-Sponsored Alzheimers Disease Trials')
 
-# Sidebar for filtering
-st.sidebar.title("Filters")
-st.sidebar.markdown("Use the filters below to refine the data displayed in the dashboard.")
-
 # =Slidebar for filtering Start Year
 st.sidebar.title("Filter by Year Range")
 year_range = st.slider(
