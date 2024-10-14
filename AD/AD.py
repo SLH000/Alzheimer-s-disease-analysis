@@ -15,25 +15,22 @@ cleaned_df['Start Year'] = cleaned_df['Start Date'].dt.year
 cleaned_df['Primary Completion Date'] = pd.to_datetime(cleaned_df['Start Date'], errors='coerce')
 cleaned_df['Completion Year'] = cleaned_df['Primary Completion Date'].dt.year
 
-# Phase 2-4 industry sponsered study completed in 2024 to 2027
-df_selected = cleaned_df[(cleaned_df['Funder Type'].str.upper() == 'INDUSTRY') &
-                        (cleaned_df['Phases'].isin(['PHASE2', 'PHASE3','PHASE4']))&
-                        (cleaned_df['Study Status']!= 'WITHDRAWN')
-                        ]
-
-df_selectedC = df_selected.dropna(axis=1, how='all')
-
 # Page config
 st.set_page_config(
     page_title="AD clinical Trial Dashboard",
     page_icon= ":bar_chart",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 # Title of the dashboard
 st.title("Alzheimer's Diasease Clinical Trial Dashboard")
+st.markdown('## Insight into Industry-Sponsored Alzheimers Disease Trials')
 
-# Plot : Trial by year started and status
-# Slidebar for year range selection
+# Sidebar for filtering
+st.sidebar.title("Filters")
+st.sidebar.markdown("Use the filters below to refine the data displayed in the dashboard.")
+
+# =Slidebar for filtering Start Year
 st.sidebar.title("Filter by Year Range")
 year_range = st.slider(
     "Select Year Range",
@@ -44,6 +41,7 @@ year_range = st.slider(
 # Filter the for study start year
 df_start = cleaned_df[(cleaned_df['Start Year'] >= year_range[0]) & (cleaned_df['Start Year'] <= year_range[1])]
 grouped_start = df_start.groupby(['Start Year', 'Study Status']).size().reset_index(name='Count')
+
 st.subheader('Registered Clinical Trials by Year Started and Study Status')
 fig0, ax0 = plt.subplots(figsize=(10,6))
 sns.barplot(x='Start Year', y="Count", hue= 'Study Status', 
@@ -56,6 +54,7 @@ ax0.legend(title='Study Status')
 # Display the plot in Streamlit
 st.pyplot(fig0)
 
+
 # Streamlit slider for selecting the year range
 st.subheader("Select Year Range for Completed Trials")
 start_year, end_year = st.slider(
@@ -66,13 +65,14 @@ start_year, end_year = st.slider(
 
 # Filter the data based on the selected year range
 df_complete = cleaned_df[(cleaned_df['Completion Year'] >= start_year) & 
-                               (cleaned_df['Completion Year'] <= end_year)]
+                            (cleaned_df['Completion Year'] <= end_year)]
 
 # Count the number of trials in the Selected Year Range
 num_trials_complete = df_complete.shape[0]
 # Streamlit section to show the number of trials in the Selected Year Range
 st.subheader("Number of Trials complete in the Selected Year Range")
 st.metric(label="Trials complete (Selected Year Range)", value=num_trials_complete)
+
 
 # Plot 1: Pie Chart for Phases will complete in the Selected Year Range
 st.subheader("Phases Distribution of Trials complete in the Selected Year Range")
@@ -87,15 +87,16 @@ st.pyplot(fig1)
 st.subheader("Sponsor vs. Phases of Trials Complete in the Selected Year Range")
 sponsor_phase_counts = df_complete.groupby(['Sponsor', 'Phases']).size().reset_index(name='Counts')
 fig2 = px.bar(sponsor_phase_counts, x='Sponsor', y='Counts', color='Phases', barmode='group',
-              title="Number of Studies per Sponsor by Phases")
+            title="Number of Studies per Sponsor by Phases")
 st.plotly_chart(fig2)
 
 # Plot3: Bar Chart for Conditions 
 st.subheader("Trials by Condition (complete in the Selected Year Range)")
 condition_counts = df_complete.groupby('Conditions').size().reset_index(name='Counts')
 fig3 = px.bar(condition_counts, x='Conditions', y='Counts',
-              title="Number of Studies per Condition")
+            title="Number of Studies per Condition")
 st.plotly_chart(fig3)
+
 
 # New Plot 4: Number of Studies Expected to Complete in the Selected Year Range
 st.subheader("Number of Studies Expected to Complete in the Selected Year Range")
@@ -104,9 +105,25 @@ st.subheader("Number of Studies Expected to Complete in the Selected Year Range"
 date_grouped_df = df_complete.groupby(['Completion Year', 'Sponsor']).size().reset_index(name='Count')
 
 # Create a bar chart using Plotly
-fig4 = px.bar(date_grouped_df, x='Completion Year', y='Count', color='Sponsor', barmode='group',
-              title="Studies Expected to Complete in the Selected Year Range by Sponsor")
-
+fig4 = px.bar(date_grouped_df, 
+              x='Completion Year', 
+              y='Count', 
+              color='Sponsor', 
+              barmode='group',
+              title="Studies Expected to Complete in the Selected Year Range by Sponsor"
+              )
+fig4.update_layout(
+    width=800,  # Set width as needed
+    height=500,  # Set height as needed
+    margin=dict(l=40, r=40, t=40, b=40),
+     legend=dict(
+        title='',
+        font=dict(
+            size=5  # Change this value to make the legend smaller or larger
+        ),
+        bgcolor='rgba(255, 255, 255, 0.5)'  # Optional: make the background semi-transparent
+    )
+)
 st.plotly_chart(fig4)
 
 # Footer
