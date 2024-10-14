@@ -1,23 +1,31 @@
-# Alzheimer-s-disease-analysis - AD Clinical Trial Dashboard
+# Alzheimer's Disease Clinical Trial Dashboard
 
 ## Overview
 
-The **AD Clinical Trial Dashboard** is a Streamlit application that provides insights into clinical trials related to Alzheimer's disease (AD). The dashboard visualizes data on industry-sponsored studies that are expected to complete between 2023 and 2034, allowing users to explore various aspects such as trial phases, sponsors, and conditions.
+This project is a Streamlit dashboard that provides insights into industry-sponsored clinical trials for Alzheimer's Disease. The dashboard allows users to visualize the data related to trial registration and completion over selected year ranges.
 
 ## Features
 
-- **Total Trials Metric**: Displays the number of trials expected to be completed between 2023 and 2034.
-- **Interactive Visualizations**:
-  - **Phases Distribution**: A pie chart showing the distribution of trial phases (Phase 2-4).
-  - **Sponsor vs. Phases**: A bar chart comparing the number of trials per sponsor across different phases.
-  - **Trials by Condition**: A bar chart displaying the number of trials by medical conditions.
-  - **Studies Completion Overview**: A grouped bar chart illustrating the number of studies expected to complete by year and sponsor.
+- **Interactive Filters**: Users can filter trials by start and completion year.
+- **Visualizations**:
+  - Bar chart of registered clinical trials by year started and study status.
+  - Pie chart showing the distribution of trial phases for completed trials within a selected year range.
+  - Bar charts comparing sponsors against phases and conditions of completed trials.
+  - A bar chart for the expected number of studies to complete by year and sponsor.
 
-## Technologies Used
+## Requirements
 
-- **Python**: The programming language used for data manipulation and visualization.
-- **Streamlit**: A framework for building interactive web applications.
-- **Pandas**: A data manipulation library for data analysis.
-- **Plotly Express**: A library for creating interactive visualizations.
-- **Matplotlib**: A library used for plotting static charts.
+Ensure you have the following libraries installed:
 
+- `pandas`
+- `streamlit`
+- `plotly`
+- `matplotlib`
+- `seaborn`
+
+You can install the required packages using the following command:
+
+```bash
+pip install pandas streamlit plotly matplotlib seaborn
+
+streamlit run AD.py
