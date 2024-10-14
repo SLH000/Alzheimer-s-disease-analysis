@@ -32,9 +32,17 @@ st.set_page_config(
 # Title of the dashboard
 st.title("Alzheimer's Diasease Clinical Trial Dashboard")
 
-# Plot : Trial by year started and status in 2004 to 2024
-# Filter the dat for study start in 2004 to 2024
-df_start = cleaned_df[(cleaned_df['Start Year'] >=2004) & (cleaned_df['Start Year'] <= 2024)]
+# Plot : Trial by year started and status
+# Slidebar for year range selection
+st.sidebar.title("Filter by Year Range")
+year_range = st.slider(
+    "Select Year Range",
+    min_value= int(cleaned_df['Start Year'].min()),
+    max_value= int(cleaned_df['Start Year'].max()),
+    value=(2010, 2030)
+)
+# Filter the for study start year
+df_start = cleaned_df[(cleaned_df['Start Year'] >= year_range[0]) & (cleaned_df['Start Year'] <= year_range[1])]
 grouped_start = df_start.groupby(['Start Year', 'Study Status']).size().reset_index(name='Count')
 st.subheader('Registered Clinical Trials by Year Started and Study Status')
 fig0, ax0 = plt.subplots(figsize=(10,6))
@@ -45,50 +53,59 @@ ax0.set_ylabel('Number of Trials')
 ax0.set_title('Registered Trials by Year Started and Study Status')
 ax0.set_xticklabels(ax0.get_xticklabels(), rotation=45)
 ax0.legend(title='Study Status')
-
 # Display the plot in Streamlit
 st.pyplot(fig0)
 
-# Filter the data for studies complete in 2023-2034
-trials_2023_2034 = df_selectedC[(df_selectedC['Completion Date'] >= '2023-01-01') & (df_selectedC['Completion Date'] <= '2034-12-31')]
-# Count the number of trials in 2023-2034
-num_trials_2023_2034 = trials_2023_2034.shape[0]
-# Streamlit section to show the number of trials from 2023-2034
-st.subheader("Number of Trials complete in 2023-2034")
-st.metric(label="Trials complete (2023-2030)", value=num_trials_2023_2034)
+# Streamlit slider for selecting the year range
+st.subheader("Select Year Range for Completed Trials")
+start_year, end_year = st.slider(
+    "Select the range of years", 
+    min_value=2010, max_value=2030, 
+    value=(2010, 2030)  
+)
 
-# Plot 1: Pie Chart for Phases will complete in 2023-2034
-st.subheader("Phases Distribution of Trials complete in 2023-2034")
-phase_counts = trials_2023_2034['Phases'].value_counts()
+# Filter the data based on the selected year range
+df_complete = cleaned_df[(cleaned_df['Completion Year'] >= start_year) & 
+                               (cleaned_df['Completion Year'] <= end_year)]
+
+# Count the number of trials in the Selected Year Range
+num_trials_complete = df_complete.shape[0]
+# Streamlit section to show the number of trials in the Selected Year Range
+st.subheader("Number of Trials complete in the Selected Year Range")
+st.metric(label="Trials complete (Selected Year Range)", value=num_trials_complete)
+
+# Plot 1: Pie Chart for Phases will complete in the Selected Year Range
+st.subheader("Phases Distribution of Trials complete in the Selected Year Range")
+phase_counts = df_complete['Phases'].value_counts()
 fig1, ax1 = plt.subplots()
 ax1.pie(phase_counts, labels=phase_counts.index, autopct='%1.1f%%', startangle=90)
 ax1.axis('equal')
 st.pyplot(fig1)
 
 
-# Plot 2: Bar Chart for Sponsor vs. Phases (complete in 2023-2034)
-st.subheader("Sponsor vs. Phases of Trials Complete in 2023-2034")
-sponsor_phase_counts = trials_2023_2034.groupby(['Sponsor', 'Phases']).size().reset_index(name='Counts')
+# Plot 2: Bar Chart for Sponsor vs. Phases (complete in the Selected Year Range)
+st.subheader("Sponsor vs. Phases of Trials Complete in the Selected Year Range")
+sponsor_phase_counts = df_complete.groupby(['Sponsor', 'Phases']).size().reset_index(name='Counts')
 fig2 = px.bar(sponsor_phase_counts, x='Sponsor', y='Counts', color='Phases', barmode='group',
               title="Number of Studies per Sponsor by Phases")
 st.plotly_chart(fig2)
 
 # Plot3: Bar Chart for Conditions 
-st.subheader("Trials by Condition (complete in 2023-2034)")
-condition_counts = trials_2023_2034.groupby('Conditions').size().reset_index(name='Counts')
+st.subheader("Trials by Condition (complete in the Selected Year Range)")
+condition_counts = df_complete.groupby('Conditions').size().reset_index(name='Counts')
 fig3 = px.bar(condition_counts, x='Conditions', y='Counts',
               title="Number of Studies per Condition")
 st.plotly_chart(fig3)
 
-# New Plot 4: Number of Studies Expected to Complete Between 2023 and 2034
-st.subheader("Number of Studies Expected to Complete Between 2023 and 2034")
+# New Plot 4: Number of Studies Expected to Complete in the Selected Year Range
+st.subheader("Number of Studies Expected to Complete in the Selected Year Range")
 
 # Group by year and sponsor
-date_grouped_df = trials_2023_2034.groupby(['Completion Year', 'Sponsor']).size().reset_index(name='Count')
+date_grouped_df = df_complete.groupby(['Completion Year', 'Sponsor']).size().reset_index(name='Count')
 
 # Create a bar chart using Plotly
 fig4 = px.bar(date_grouped_df, x='Completion Year', y='Count', color='Sponsor', barmode='group',
-              title="Studies Expected to Complete Between 2023 and 2034 by Sponsor")
+              title="Studies Expected to Complete in the Selected Year Range by Sponsor")
 
 st.plotly_chart(fig4)
 
