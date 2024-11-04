@@ -8,10 +8,10 @@ This project is a Streamlit dashboard that provides insights into industry-spons
 
 - **Interactive Filters**: Users can filter trials by start and completion year.
 - **Visualizations**:
-  - Bar chart of registered clinical trials by year started and study status.
-  - Pie chart showing the distribution of trial phases for completed trials within a selected year range.
-  - Bar charts comparing sponsors against phases and conditions of completed trials.
-  - A bar chart for the expected number of studies to complete by year and sponsor.
+  - **Bar chart** of registered clinical trials by year started and study status.
+  - **Pie chart** showing the distribution of trial phases for completed trials within a selected year range.
+  - **Bar charts** comparing sponsors against phases and conditions of completed trials.
+  - **Bar chart** for the expected number of studies to complete by year and sponsor.
 
 ## Requirements
 
